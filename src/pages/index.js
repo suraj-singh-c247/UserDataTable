@@ -2,19 +2,17 @@ import Head from "next/head";
 import { Geist, Geist_Mono } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import btnStyles from "@/styles/Button.module.css";
-import errorStyles from "@/styles/Error.module.css";
-import { Box, Container, FormControl, InputLabel, MenuItem, Paper, Select, TextField } from "@mui/material";
-import CustomButton from "@/components/Button";
+import { Box, Container, Paper, Select, TextField } from "@mui/material";
+import CustomButton from "@/components/CustomButton";
 import AddIcon from "@mui/icons-material/Add";
 import DataTable from "@/components/DataTable";
 import { data } from "@/utils/data.js";
 import { userColumns } from "@/utils/column.js";
 import Search from "@/components/Search";
+import {  use, useEffect, useState } from "react";
 import AddEditModal from "@/components/modal/AddEditModal";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup"
-import { userSchema } from "@/utils/validation";
+import { getUserDataFromStorage, setUserDataToStorage } from "@/utils/localStorageData";
+import DeleteModal from "@/components/modal/DeleteModal";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -26,41 +24,20 @@ const geistMono = Geist_Mono({
 });
 
 export default function Home() {
+  
+  
   const[addOpen, setAddOpen] = useState(false);
-  const [userData, setUserData] = useState(data);
-  const { handleSubmit, control,formState:{errors},reset } = useForm({
-    resolver: yupResolver(userSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      role: "", // This will be used for the select dropdown
-      phoneNumber: "",
-      status: "",
-    },
-  });
-
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    const existingData = JSON.parse(localStorage.getItem("userData")) || [];
-    // Check if the email already exists in the userData
-    const emailExists = existingData.some((user) => user.email === data.email);
-    if (emailExists) {
-      alert("Email already exists. Please use a different email.");
-      return; // Stop the submission if email already exists
-    }
-    const newId = existingData.length ? existingData[existingData.length - 1].id + 1 : 1; // Generate a new ID
-    const newUser={id:newId, ...data};
-    setUserData([...existingData, newUser]);
-    // Update localStorage with the new user data
-    localStorage.setItem("userData", JSON.stringify([...existingData, newUser]));
-    alert("User added successfully!");
-    setAddOpen(false);
-    // Reset form fields after submission 
-    reset();
-  };
+  const [userData, setUserData] = useState(data); 
   useEffect(() => {
-    localStorage.setItem("userData", JSON.stringify(userData));
-   }, [userData]);
+    const stored = getUserDataFromStorage();    
+    if (stored.length === 0) {
+      setUserData(data);
+      setUserDataToStorage(data);
+    } else {
+      setUserData(stored);
+    }
+  }, []);
+  
   return (
     <>
       <Head>
@@ -90,88 +67,9 @@ export default function Home() {
           </Container>
         </main>
       </Box>
-      <AddEditModal open={addOpen} onClose={() => {setAddOpen(false);reset()}} onSubmit={handleSubmit(onSubmit)} title={"Add User Details"}>
-       <Controller
-        name="name"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Name"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            error={!!errors.name}
-            helperText={errors.name?.message}
-          />
-        )}
-       />
-        <Controller
-        name="email"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Email"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            error={!!errors.email}
-            helperText={errors.email?.message}
-          />
-        )}
-       />
-       {/* Select Dropdown */}
-      <Controller
-        name="role"
-        control={control}
-        render={({ field }) => (
-          <FormControl fullWidth margin="normal" error={!!errors.role}>
-            <InputLabel>Select Role</InputLabel>
-            <Select {...field} label="Select Role">
-              <MenuItem value="admin">Admin</MenuItem>
-              <MenuItem value="editor">Editor</MenuItem>
-              <MenuItem value="viewer">Viewer</MenuItem>
-            </Select>
-            {errors.role && (
-        <p className={errorStyles.error}>{errors.role.message}</p>
-      )}
-          </FormControl>
-        )}
-      />
-        <Controller
-        name="phoneNumber"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Phone Number"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            error={!!errors.phoneNumber}
-            helperText={errors.phoneNumber?.message}
-          />
-        )}
-       />
-       <Controller
-        name="status"
-        control={control}
-        render={({ field }) => (
-          <FormControl fullWidth margin="normal" error={!!errors.status}>
-            <InputLabel>Select Status</InputLabel>
-            <Select {...field} label="Select Status">
-              <MenuItem value="active">Active</MenuItem>
-              <MenuItem value="inActive">InActive</MenuItem>
-              <MenuItem value="pending">Pending</MenuItem>
-            </Select>
-            {errors.status && (
-        <p style={{ color: "red", fontSize: "0.8rem" }}>{errors.status.message}</p>
-      )}
-          </FormControl>
-        )}
-       />        
-      </AddEditModal>
+      {/* This modal for add user */}
+      <AddEditModal open={addOpen} userData={userData} setUserData={setUserData} onClose={() => {setAddOpen(false)}}  title={"Add User Details"} />
+      <DeleteModal/>
     </>
   );
 }
