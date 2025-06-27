@@ -1,0 +1,7 @@
+.buttonContainer{
+    display: flex;
+    justify-content: flex-end;
+  }
+  .buttonContainerGap {
+    gap: 10px;
+  }

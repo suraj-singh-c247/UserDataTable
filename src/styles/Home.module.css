@@ -1,0 +1,18 @@
+.main{
+  margin-block: 10px;
+}
+
+.paper {
+  background-color: var(--gray-alpha-200);
+  border-radius: 8px;
+  padding: 24px;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(var(--gray-rgb), 0.1);
+}
+
+
+
+.searchContainer {
+  width: 30%;
+}
+
