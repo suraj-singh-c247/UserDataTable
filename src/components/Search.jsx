@@ -1,25 +1,44 @@
-import { Box, TextField } from "@mui/material";
+import { Box, IconButton, TextField } from "@mui/material";
 import { memo } from "react";
-
-const Search = ({placeholder,type, label, variant, className, searchTerm, setSearchTerm }) => {
+import CloseIcon from "@mui/icons-material/Close";
+import searchStyles from "@/styles/Search.module.css";
+const Search = ({
+  placeholder,
+  type,
+  label,
+  variant,
+  className,
+  searchTerm,
+  handleSearch,
+  handleClear,
+}) => {
   return (
     <Box
-      className="search-container"
+      className={searchStyles.searchForm}
       component={"form"}
       noValidate
       autoComplete="off"
     >
       <TextField
-       fullWidth
-        type={type||"text"}
+        fullWidth
+        type={type || "text"}
         id="outlined-basic"
         label={label}
         variant={variant}
         className={className}
         value={searchTerm}
         placeholder={placeholder || "Search..."}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={(e) => handleSearch(e.target.value)}
       />
+      {searchTerm && searchTerm.length > 0 && (
+        <IconButton
+          aria-label="clear"
+          onClick={handleClear}
+          className={searchStyles.clearButton}
+        >
+          <CloseIcon />
+        </IconButton>
+      )}
     </Box>
   );
 };

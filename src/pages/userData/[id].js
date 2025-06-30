@@ -7,6 +7,7 @@ export default function UserDataView() {
   const [singleUser, setSingleUser] = useState([]);
   const router = useRouter();
   const { id } = router.query;
+  
   useEffect(() => {
     const userData = getUserDataFromStorage();    
     if (id) {
@@ -15,9 +16,7 @@ export default function UserDataView() {
     }
   }, [id]);
 
-  return (
-    <>
-      <UserDetails user={singleUser} />
-    </>
+  return (   
+      <UserDetails user={singleUser} />    
   );
 }

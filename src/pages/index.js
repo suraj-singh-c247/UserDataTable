@@ -1,18 +1,30 @@
 import Head from "next/head";
 import { Geist, Geist_Mono } from "next/font/google";
-import styles from "@/styles/Home.module.css";
-import btnStyles from "@/styles/Button.module.css";
-import { Box, Container, Paper, Select, TextField } from "@mui/material";
-import CustomButton from "@/components/CustomButton";
-import AddIcon from "@mui/icons-material/Add";
-import DataTable from "@/components/DataTable";
+import { Box, Container, Paper, Typography } from "@mui/material";
+// user utils
 import { data } from "@/utils/data.js";
 import { userColumns } from "@/utils/column.js";
 import Search from "@/components/Search";
-import {  use, useEffect, useState } from "react";
+import {
+  getUserDataFromStorage,
+  setUserDataToStorage,
+} from "@/utils/localStorageData";
+// react hooks
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+
+// custom modal
 import AddEditModal from "@/components/modal/AddEditModal";
-import { getUserDataFromStorage, setUserDataToStorage } from "@/utils/localStorageData";
+import DataTable from "@/components/DataTable";
 import DeleteModal from "@/components/modal/DeleteModal";
+import CustomButton from "@/components/CustomButton";
+
+// Icons
+import AddIcon from "@mui/icons-material/Add";
+// this for styles
+import styles from "@/styles/Home.module.css";
+import btnStyles from "@/styles/Button.module.css";
+import searchStyles from "@/styles/Search.module.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,20 +36,128 @@ const geistMono = Geist_Mono({
 });
 
 export default function Home() {
+  const router = useRouter();
+  const { search = "", page = "1", rowPerPage = "5" } = router.query;
+  //state
+  const [addOpen, setAddOpen] = useState(false);
+  const [userData, setUserData] = useState(data);
+  const [searchText, setSearchText] = useState("");
+  const [customPage, setCustomPage] = useState(Number(page) - 1);
+  const [customRowsPerPage, setCustomRowsPerPage] = useState(
+    Number(rowPerPage)-1
+  );
+
+  // useEffect to initialize user data from local storage or default data
+  // and set it to state
   
-  
-  const[addOpen, setAddOpen] = useState(false);
-  const [userData, setUserData] = useState(data); 
   useEffect(() => {
-    const stored = getUserDataFromStorage();    
-    if (stored.length === 0) {
+    // On first load, clear query params to reset search and pagination
+    if (router.isReady && (search || page !== "1" || rowPerPage !== "5")) {
+      router.replace({
+        pathname: router.pathname,
+        query: {},
+      });
+      setSearchText(searchText);
+      setCustomPage(0);
+      setCustomRowsPerPage(5);
+    }
+  
+    const storedData = getUserDataFromStorage();
+    if (storedData && storedData.length > 0) {
+      setUserData(storedData);
+    } else {
       setUserData(data);
       setUserDataToStorage(data);
-    } else {
-      setUserData(stored);
     }
-  }, []);
+  }, [router.isReady]);
   
+  useEffect(() => {
+    const storedData = getUserDataFromStorage();
+    if (!search && !search.trim() === "") {
+      setUserData(storedData);
+      setSearchText("");
+      return;
+    }
+    const filteredData = storedData.filter((user) => {
+      return (
+        user.name
+          .toLocaleLowerCase()
+          .includes(searchText.toLocaleLowerCase()) ||
+        user.email
+          .toLocaleLowerCase()
+          .includes(searchText.toLocaleLowerCase()) ||
+        user.role
+          .toLocaleLowerCase()
+          .includes(searchText.toLocaleLowerCase()) ||
+        user.phoneNumber
+          .toLocaleLowerCase()
+          .includes(searchText.toLocaleLowerCase()) ||
+        user.status.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())
+      );
+    });
+    setUserData(filteredData);
+    setSearchText(search);
+  }, [search]);
+
+  useEffect(() => {
+    if (searchText === "") {
+      setUserData(data);
+      setUserData(getUserDataFromStorage());
+    }
+  }, [search]);
+
+  // useEffect for pagination
+  useEffect(() => {
+    setCustomPage(Number(customPage));
+    setCustomRowsPerPage(Number(customRowsPerPage));
+  }, [customPage, customRowsPerPage]);
+
+  // Function to handle search input
+  const handleSearch = (searchTerm) => {
+    if (searchTerm.length > 3) {
+      setSearchText(searchTerm);
+    }
+    router.push({
+      pathname: router.pathname,
+      query: { search: searchTerm },
+    });
+  };
+  // Function to clear search input and reset user data
+  const handleClear = () => {
+    setSearchText("");
+    router.push({
+      pathname: router.pathname,
+      query: {},
+    });
+    const storedData = getUserDataFromStorage();
+    setUserData(storedData);
+  };
+  console.log(search, "search");
+
+  // Function to handle page change
+  const handlePageChange = (event, newPage) => {
+    setCustomPage(newPage);
+    router.push({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        page: customPage + 1,
+        rowPerPage: customRowsPerPage,
+      },
+    });
+  };
+
+  const handleRowPerPageChange = (event) => {
+    const newRowPerPage = parseInt(event.target.value, 10);
+
+    setCustomRowsPerPage(newRowPerPage);
+    setCustomPage(1);
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, page: 1, rowPerPage: newRowPerPage },
+    });
+  };
+
   return (
     <>
       <Head>
@@ -50,7 +170,9 @@ export default function Home() {
         <main className={styles.main}>
           <Container maxWidth="xl" className={styles.container}>
             <Paper elevation={3} className={styles.paper}>
-              <h1 className={styles.title}>Welcome to the Data Table App</h1>
+              <Typography variant="h4" className={styles.title}>
+                Welcome to the Data Table App
+              </Typography>
               <Box className={btnStyles.buttonContainer}>
                 <CustomButton
                   variant="outlined"
@@ -59,17 +181,42 @@ export default function Home() {
                   onClick={() => setAddOpen(true)}
                 />
               </Box>
-              <Box className={styles.searchContainer}>
-                <Search type={"text"} />
+              <Box className={searchStyles.searchContainer}>
+                <Search
+                  type={"text"}
+                  searchTerm={searchText}
+                  setSearchTerm={setSearchText}
+                  handleSearch={handleSearch}
+                  handleClear={handleClear}
+                />
               </Box>
-              <DataTable userData={userData} columns={userColumns} />
+              <DataTable
+                page={customPage}
+                rowsPerPage={customRowsPerPage}
+                count={userData.length}
+                userData={userData.slice(
+                  customPage * customRowsPerPage,
+                  customPage * customRowsPerPage + customRowsPerPage
+                )}
+                onPageChange={handlePageChange}
+                onRowChange={handleRowPerPageChange}
+                columns={userColumns}
+              />
             </Paper>
           </Container>
         </main>
       </Box>
       {/* This modal for add user */}
-      <AddEditModal open={addOpen} userData={userData} setUserData={setUserData} onClose={() => {setAddOpen(false)}}  title={"Add User Details"} />
-      <DeleteModal/>
+      <AddEditModal
+        open={addOpen}
+        userData={userData}
+        setUserData={setUserData}
+        onClose={() => {
+          setAddOpen(false);
+        }}
+        title={"Add User Details"}
+      />
+      <DeleteModal />
     </>
   );
 }

@@ -20,14 +20,7 @@ import {
   setUserDataToStorage,
 } from "@/utils/localStorageData";
 
-const AddEditModal = ({
-  open,  
-  onClose,
-  title,
-  userData,
-  setUserData,  
-  id
-}) => {
+const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
   const {
     handleSubmit,
     setValue,
@@ -51,15 +44,16 @@ const AddEditModal = ({
       setValue("role", userData.role || "");
       setValue("phoneNumber", userData.phoneNumber || "");
       setValue("status", userData.status || "");
-    }else{
+    } else {
       reset();
     }
   }, [open, userData]);
   const onSubmit = (data) => {
-    
     const existingData = getUserDataFromStorage();
-
-      const emailExists = existingData.some((user) => user.email === data.email);
+    if (!id) {
+      const emailExists = existingData.some(
+        (user) => user.email === data.email
+      );
       if (emailExists) {
         alert("Email already exists. Please use a different email.");
         return; // Stop the submission if email already exists
@@ -71,96 +65,89 @@ const AddEditModal = ({
       setUserData([...existingData, newUser]);
       // Update localStorage with the new user data
       setUserDataToStorage([...existingData, newUser]);
-  
       alert("User added successfully!");
-            
-    
+    }
 
     if (id) {
       const updatedData = existingData.map((user) =>
         user.id === parseInt(id) ? { ...user, ...data } : user
       );
-      console.log("Updated Data:", updatedData);
-      
       setUserData(updatedData);
       setUserDataToStorage(updatedData);
       alert("User updated successfully!");
     }
 
     onClose();
-    reset(); 
-   
+    reset();
   };
   return (
-    <>
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={open}
-        onClose={onClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Fade in={open}>
-          <Box className={styles.modalStyle}>
-            <Box className={styles.modalHeader}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                {title || "Add User Details"}
-              </Typography>
-              <IconButton
-                aria-label="close"
-                onClick={() => {
-                  onClose();
-                  reset();
-                }}
-                sx={{
-                  position: "absolute",
-                  right: 8,
-                  top: 8,
-                  color: (theme) => theme.palette.grey[500],
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            <Box className={styles.modalContent}>
+    <Modal
+      aria-labelledby="transition-modal-title"
+      aria-describedby="transition-modal-description"
+      open={open}
+      onClose={onClose}
+      closeAfterTransition
+      slots={{ backdrop: Backdrop }}
+      slotProps={{
+        backdrop: {
+          timeout: 500,
+        },
+      }}
+    >
+      <Fade in={open}>
+        <Box className={styles.modalStyle}>
+          <Box className={styles.modalHeader}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              {title || "Add User Details"}
+            </Typography>
+            <IconButton
+              aria-label="close"
+              onClick={() => {
+                onClose();
+                reset();
+              }}
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Box className={styles.modalContent}>
+            <Box
+              component="form"
+              noValidate
+              autoComplete="off"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <AddEditUser
+                control={control}
+                errors={errors}
+                userData={userData}
+                setUserData={setUserData}
+              />
               <Box
-                component="form"
-                noValidate
-                autoComplete="off"
-                onSubmit={handleSubmit(onSubmit)}
+                className={`${btnStyles.buttonContainer} ${btnStyles.buttonContainerGap}`}
               >
-                <AddEditUser
-                  control={control}
-                  errors={errors}
-                  userData={userData}
-                  setUserData={setUserData}
+                <CustomButton
+                  variant={"outlined"}
+                  onClick={onClose}
+                  label={"Cancel"}
                 />
-                <Box
-                  className={`${btnStyles.buttonContainer} ${btnStyles.buttonContainerGap}`}
-                >
-                  <CustomButton
-                    variant={"outlined"}
-                    onClick={onClose}
-                    label={"Cancel"}
-                  />
-                  <CustomButton
-                    type="submit"
-                    variant={"contained"}
-                    label={"Save"}
-                  />
-                </Box>
+                <CustomButton
+                  type="submit"
+                  variant={"contained"}
+                  label={"Save"}
+                />
               </Box>
             </Box>
           </Box>
-        </Fade>
-      </Modal>
-    </>
+        </Box>
+      </Fade>
+    </Modal>
   );
 };
 

@@ -1,11 +1,17 @@
-import { TableBody, TableCell, TableRow } from "@mui/material";
-import { memo} from "react";
-import Button from "./CustomButton";
+import {
+  Chip,
+  IconButton,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@mui/material";
+import { memo } from "react";
 import { useRouter } from "next/router";
-
-const CustomTableBody = ({ userData, onDelete }) => {
-const router=useRouter();
-  
+import PreviewIcon from "@mui/icons-material/Preview";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+const CustomTableBody = ({ userData }) => {
+  const router = useRouter();
   return (
     <TableBody>
       {userData.map((row) => (
@@ -14,11 +20,36 @@ const router=useRouter();
           <TableCell>{row.email}</TableCell>
           <TableCell>{row.role}</TableCell>
           <TableCell>{row.phoneNumber}</TableCell>
-          <TableCell>{row.status}</TableCell>
-          <TableCell style={{ display: "flex", gap: "10px" }}>
-            <Button variant={"outlined"} label={"View"} onClick={() => router.push(`/userData/${row.id}`)} />
-            <Button variant={"outlined"} label={"Edit"} onClick={() => router.push(`/editUser/${row.id}`)}>Edit</Button>
-            <Button variant={"outlined"} label={"Delete"} onClick={() => router.push(`/deleteUser/${row.id}`)}>Delete</Button>
+          <TableCell>
+            {row.status && (
+              <Chip
+                color={
+                  row.status === "Active"
+                    ? "success"
+                    : row.status === "InActive"
+                    ? "warning"
+                    : "info"
+                }
+                label={
+                  row.status === "Active"
+                    ? "Active"
+                    : row.status === "InActive"
+                    ? "InActive"
+                    : "Pending"
+                }
+              />
+            )}{" "}
+          </TableCell>
+          <TableCell style={{ display: "flex", gap: "4px" }}>
+            <IconButton onClick={() => router.push(`/userData/${row.id}`)}>
+              <PreviewIcon />
+            </IconButton>
+            <IconButton onClick={() => router.push(`/editUser/${row.id}`)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => router.push(`/deleteUser/${row.id}`)}>
+              <DeleteIcon />
+            </IconButton>
           </TableCell>
         </TableRow>
       ))}

@@ -1,8 +1,15 @@
 import { memo } from "react";
-import Button from '@mui/material/Button';
-function CustomButton({variant, label,startIcon, onClick, ...props}) {  
+import Button from "@mui/material/Button";
+function CustomButton({ variant, label, startIcon, onClick, ...props }) {
   return (
-    <Button variant={variant} onClick={onClick} {...props} startIcon={startIcon}>{label}</Button>   
+    <Button
+      variant={variant}
+      onClick={onClick}
+      {...props}
+      startIcon={startIcon}
+    >
+      {label}
+    </Button>
   );
 }
 
