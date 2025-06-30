@@ -19,6 +19,7 @@ import {
   getUserDataFromStorage,
   setUserDataToStorage,
 } from "@/utils/localStorageData";
+import { toast } from "react-toastify";
 
 const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
   const {
@@ -65,7 +66,7 @@ const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
       setUserData([...existingData, newUser]);
       // Update localStorage with the new user data
       setUserDataToStorage([...existingData, newUser]);
-      alert("User added successfully!");
+      toast.success("User added successfully!");
     }
 
     if (id) {
@@ -74,7 +75,7 @@ const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
       );
       setUserData(updatedData);
       setUserDataToStorage(updatedData);
-      alert("User updated successfully!");
+      toast.success("User updated successfully!");
     }
 
     onClose();

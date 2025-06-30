@@ -1,5 +1,7 @@
 .searchContainer {
-  width: 30%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 
 .searchContainer .searchForm {
@@ -7,6 +9,7 @@
 }
 .searchContainer .searchForm div {
   border-radius: 16px;
+  height: 42px;
 }
 .searchContainer .searchForm .clearButton {
   position: absolute;

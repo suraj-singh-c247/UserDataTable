@@ -44,24 +44,13 @@ export default function Home() {
   const [searchText, setSearchText] = useState("");
   const [customPage, setCustomPage] = useState(Number(page) - 1);
   const [customRowsPerPage, setCustomRowsPerPage] = useState(
-    Number(rowPerPage)-1
+    Number(rowPerPage)
   );
 
   // useEffect to initialize user data from local storage or default data
   // and set it to state
   
-  useEffect(() => {
-    // On first load, clear query params to reset search and pagination
-    if (router.isReady && (search || page !== "1" || rowPerPage !== "5")) {
-      router.replace({
-        pathname: router.pathname,
-        query: {},
-      });
-      setSearchText(searchText);
-      setCustomPage(0);
-      setCustomRowsPerPage(5);
-    }
-  
+  useEffect(() => {  
     const storedData = getUserDataFromStorage();
     if (storedData && storedData.length > 0) {
       setUserData(storedData);
@@ -82,29 +71,24 @@ export default function Home() {
       return (
         user.name
           .toLocaleLowerCase()
-          .includes(searchText.toLocaleLowerCase()) ||
+          .includes(search.toLocaleLowerCase()) ||
         user.email
           .toLocaleLowerCase()
-          .includes(searchText.toLocaleLowerCase()) ||
+          .includes(search.toLocaleLowerCase()) ||
         user.role
           .toLocaleLowerCase()
-          .includes(searchText.toLocaleLowerCase()) ||
+          .includes(search.toLocaleLowerCase()) ||
         user.phoneNumber
           .toLocaleLowerCase()
-          .includes(searchText.toLocaleLowerCase()) ||
-        user.status.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())
+          .includes(search.toLocaleLowerCase()) ||
+        user.status.toLocaleLowerCase().includes(search.toLocaleLowerCase())
       );
-    });
+    });    
+    
     setUserData(filteredData);
     setSearchText(search);
   }, [search]);
 
-  useEffect(() => {
-    if (searchText === "") {
-      setUserData(data);
-      setUserData(getUserDataFromStorage());
-    }
-  }, [search]);
 
   // useEffect for pagination
   useEffect(() => {
@@ -132,7 +116,6 @@ export default function Home() {
     const storedData = getUserDataFromStorage();
     setUserData(storedData);
   };
-  console.log(search, "search");
 
   // Function to handle page change
   const handlePageChange = (event, newPage) => {
@@ -149,7 +132,6 @@ export default function Home() {
 
   const handleRowPerPageChange = (event) => {
     const newRowPerPage = parseInt(event.target.value, 10);
-
     setCustomRowsPerPage(newRowPerPage);
     setCustomPage(1);
     router.push({
@@ -173,14 +155,7 @@ export default function Home() {
               <Typography variant="h4" className={styles.title}>
                 Welcome to the Data Table App
               </Typography>
-              <Box className={btnStyles.buttonContainer}>
-                <CustomButton
-                  variant="outlined"
-                  label="Add User"
-                  startIcon={<AddIcon />}
-                  onClick={() => setAddOpen(true)}
-                />
-              </Box>
+              
               <Box className={searchStyles.searchContainer}>
                 <Search
                   type={"text"}
@@ -189,6 +164,14 @@ export default function Home() {
                   handleSearch={handleSearch}
                   handleClear={handleClear}
                 />
+              <Box className={btnStyles.buttonContainer}>
+                <CustomButton
+                  variant="contained"
+                  label="Add User"
+                  startIcon={<AddIcon />}
+                  onClick={() => setAddOpen(true)}
+                />
+              </Box>
               </Box>
               <DataTable
                 page={customPage}

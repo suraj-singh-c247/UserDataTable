@@ -5,6 +5,7 @@ import {
 } from "@/utils/localStorageData";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function DeleteUserDetails() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function DeleteUserDetails() {
     e.preventDefault();
     const updatedData = data.filter((user) => user.id !== id);
     setUserDataToStorage(updatedData);
-    alert("User deleted successfully!");
+    toast.success("User deleted successfully!");
     setOpen(false);
     router.push("/");
   };
