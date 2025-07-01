@@ -16,7 +16,6 @@ import { useRouter } from "next/router";
 // custom modal
 import AddEditModal from "@/components/modal/AddEditModal";
 import DataTable from "@/components/DataTable";
-import DeleteModal from "@/components/modal/DeleteModal";
 import CustomButton from "@/components/CustomButton";
 
 // Icons
@@ -37,7 +36,7 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   const router = useRouter();
-  const { search = "", page = "1", rowPerPage = "5" } = router.query;
+  const { search = "", page = "1", rowPerPage = "10" } = router.query;
   //state
   const [addOpen, setAddOpen] = useState(false);
   const [userData, setUserData] = useState(data);
@@ -151,7 +150,7 @@ export default function Home() {
       <Box className={`${geistSans.variable} ${geistMono.variable}`}>
         <main className={styles.main}>
           <Container maxWidth="xl" className={styles.container}>
-            <Paper elevation={3} className={styles.paper}>
+            <Paper className={styles.paper}>
               <Typography variant="h4" className={styles.title}>
                 Welcome to the Data Table App
               </Typography>
@@ -199,7 +198,7 @@ export default function Home() {
         }}
         title={"Add User Details"}
       />
-      <DeleteModal />
+      
     </>
   );
 }

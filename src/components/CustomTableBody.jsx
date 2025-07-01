@@ -10,10 +10,11 @@ import { useRouter } from "next/router";
 import PreviewIcon from "@mui/icons-material/Preview";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import tableStyle from "@/styles/Table.module.css";
 const CustomTableBody = ({ userData }) => {
   const router = useRouter();
   return (
-    <TableBody>
+    <TableBody className={tableStyle.tableBody}>
       {userData.map((row) => (
         <TableRow hover key={row.id}>
           <TableCell>{row.name}</TableCell>
@@ -42,13 +43,13 @@ const CustomTableBody = ({ userData }) => {
           </TableCell>
           <TableCell style={{ display: "flex", gap: "4px" }}>
             <IconButton onClick={() => router.push(`/userData/${row.id}`)}>
-              <PreviewIcon />
+              <PreviewIcon color="secondary"/>
             </IconButton>
             <IconButton onClick={() => router.push(`/editUser/${row.id}`)}>
-              <EditIcon />
+              <EditIcon color="info"/>
             </IconButton>
             <IconButton onClick={() => router.push(`/deleteUser/${row.id}`)}>
-              <DeleteIcon />
+              <DeleteIcon color="error"/>
             </IconButton>
           </TableCell>
         </TableRow>

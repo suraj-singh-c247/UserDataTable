@@ -1,6 +1,6 @@
 import { TablePagination } from "@mui/material";
 import { memo } from "react";
-
+import tableStyle from "@/styles/Table.module.css"
 const CustomPagination = ({
   count,
   page,
@@ -10,6 +10,7 @@ const CustomPagination = ({
 }) => {
   return (
     <TablePagination
+      className={tableStyle.tablePagination}
       component="div"
       count={count}
       page={page}

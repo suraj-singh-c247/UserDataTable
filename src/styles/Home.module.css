@@ -2,12 +2,12 @@
   margin-block: 10px;
 }
 
-.paper {
-  background-color: var(--gray-alpha-200);
-  border-radius: 8px;
-  padding: 24px;
+.main .paper {
+  background-color: #f4f7fc;
+  border-radius: 16px;
+  padding-block: 24px;
   width: 100%;
-  box-shadow: 0 2px 4px rgba(var(--gray-rgb), 0.1);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px !important;
 }
 
 .paper .title {
@@ -15,6 +15,7 @@
   font-size: 32px;
   line-height: 38px;
   margin-bottom: 24px;
+  padding-inline: 24px;
 }
 
 .userDetails {
