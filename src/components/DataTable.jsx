@@ -15,6 +15,9 @@ const DataTable = ({
   rowsPerPage,
   onPageChange,
   onRowChange,
+  setViewModal,
+  setEditModal,
+  setDeleteModal
 }) => {
   return (
     <>
@@ -25,7 +28,7 @@ const DataTable = ({
           className={tableStyle.table}
         >
           <CustomTableHead columns={columns} />
-          <CustomTableBody userData={userData} />
+          <CustomTableBody userData={userData} setViewModal={setViewModal} setEditModal={setEditModal} setDeleteModal={setDeleteModal} />
         </Table>
       </TableContainer>
       <CustomPagination

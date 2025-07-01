@@ -1,9 +1,11 @@
 import {
   Chip,
+  Fade,
   IconButton,
   TableBody,
   TableCell,
   TableRow,
+  Tooltip,
 } from "@mui/material";
 import { memo } from "react";
 import { useRouter } from "next/router";
@@ -11,7 +13,7 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import tableStyle from "@/styles/Table.module.css";
-const CustomTableBody = ({ userData }) => {
+const CustomTableBody = ({ userData,setViewModal,setEditModal,setDeleteModal }) => {
   const router = useRouter();
   return (
     <TableBody className={tableStyle.tableBody}>
@@ -42,18 +44,56 @@ const CustomTableBody = ({ userData }) => {
             )}{" "}
           </TableCell>
           <TableCell style={{ display: "flex", gap: "4px" }}>
-            <IconButton onClick={() => router.push(`/userData/${row.id}`)}>
-              <PreviewIcon color="secondary"/>
-            </IconButton>
-            <IconButton onClick={() => router.push(`/editUser/${row.id}`)}>
-              <EditIcon color="info"/>
-            </IconButton>
-            <IconButton onClick={() => router.push(`/deleteUser/${row.id}`)}>
-              <DeleteIcon color="error"/>
-            </IconButton>
+            <Tooltip
+              title="View"
+              arrow
+              placement="top"
+              slots={{
+                transition: Fade,
+              }}
+              slotProps={{
+                transition: { timeout: 600 },
+              }}
+            >
+              <IconButton onClick={() => setViewModal({id:row.id,open:true})}>
+                <PreviewIcon color="secondary" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              title="Edit"
+              arrow
+              placement="top"
+              slots={{
+                transition: Fade,
+              }}
+              slotProps={{
+                transition: { timeout: 600 },
+              }}
+            >
+              <IconButton onClick={() => setEditModal({id:row.id,open:true})}>
+                <EditIcon color="info" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              title="Delete"
+              arrow
+              placement="top"
+              slots={{
+                transition: Fade,
+              }}
+              slotProps={{
+                transition: { timeout: 600 },
+              }}
+            >
+              <IconButton onClick={() => setDeleteModal({id:row.id,open:true})}>
+                <DeleteIcon color="error" />
+              </IconButton>
+            </Tooltip>
           </TableCell>
         </TableRow>
+
       ))}
+      {userData.length===0 && <TableRow><TableCell style={{textAlign:"center"}} colSpan={"6"}>No data found...</TableCell></TableRow>}
     </TableBody>
   );
 };

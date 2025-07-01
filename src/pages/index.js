@@ -24,6 +24,8 @@ import AddIcon from "@mui/icons-material/Add";
 import styles from "@/styles/Home.module.css";
 import btnStyles from "@/styles/Button.module.css";
 import searchStyles from "@/styles/Search.module.css";
+import ViewModal from "@/components/modal/ViewModal";
+import DeleteModal from "@/components/modal/DeleteModal";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -36,20 +38,26 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   const router = useRouter();
+  const pathname = router.pathname.replace(/^\//, "");
+
   const { search = "", page = "1", rowPerPage = "10" } = router.query;
   //state
   const [addOpen, setAddOpen] = useState(false);
   const [userData, setUserData] = useState(data);
+  const [singleUser, setSingleUser] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [customPage, setCustomPage] = useState(Number(page) - 1);
   const [customRowsPerPage, setCustomRowsPerPage] = useState(
     Number(rowPerPage)
   );
-
+  const [viewModal, setViewModal] = useState({ id: null, open: false });
+  const [deleteModal, setDeleteModal] = useState({ id: null, open: false });
+  const [editModal, setEditModal] = useState({ id: null, open: false });
   // useEffect to initialize user data from local storage or default data
   // and set it to state
-  
-  useEffect(() => {  
+
+  useEffect(() => {
+    if (!router.isReady) return;
     const storedData = getUserDataFromStorage();
     if (storedData && storedData.length > 0) {
       setUserData(storedData);
@@ -57,8 +65,8 @@ export default function Home() {
       setUserData(data);
       setUserDataToStorage(data);
     }
-  }, [router.isReady]);
-  
+  }, [router.isReady, editModal.id, deleteModal.id]);
+
   useEffect(() => {
     const storedData = getUserDataFromStorage();
     if (!search && !search.trim() === "") {
@@ -68,26 +76,37 @@ export default function Home() {
     }
     const filteredData = storedData.filter((user) => {
       return (
-        user.name
-          .toLocaleLowerCase()
-          .includes(search.toLocaleLowerCase()) ||
-        user.email
-          .toLocaleLowerCase()
-          .includes(search.toLocaleLowerCase()) ||
-        user.role
-          .toLocaleLowerCase()
-          .includes(search.toLocaleLowerCase()) ||
+        user.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
+        user.email.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
+        user.role.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
         user.phoneNumber
           .toLocaleLowerCase()
           .includes(search.toLocaleLowerCase()) ||
         user.status.toLocaleLowerCase().includes(search.toLocaleLowerCase())
       );
-    });    
-    
+    });
+
     setUserData(filteredData);
     setSearchText(search);
+    if (search.length === 0) {
+      router.push({
+        pathname: pathname,
+        query: {},
+      });
+    }
   }, [search]);
+  // It's use for edit
+  useEffect(() => {
+    const data = getUserDataFromStorage();
+    if (editModal?.id) {
+      const foundUser = data.find(
+        (user) => user.id === parseInt(editModal?.id)
+      );
+      if (foundUser) setSingleUser(foundUser);
+    }
+  }, [editModal?.id]);
 
+  if (!singleUser) return null;
 
   // useEffect for pagination
   useEffect(() => {
@@ -100,8 +119,9 @@ export default function Home() {
     if (searchTerm.length > 3) {
       setSearchText(searchTerm);
     }
+
     router.push({
-      pathname: router.pathname,
+      pathname: pathname,
       query: { search: searchTerm },
     });
   };
@@ -109,7 +129,7 @@ export default function Home() {
   const handleClear = () => {
     setSearchText("");
     router.push({
-      pathname: router.pathname,
+      pathname: pathname,
       query: {},
     });
     const storedData = getUserDataFromStorage();
@@ -120,7 +140,7 @@ export default function Home() {
   const handlePageChange = (event, newPage) => {
     setCustomPage(newPage);
     router.push({
-      pathname: router.pathname,
+      pathname: pathname,
       query: {
         ...router.query,
         page: customPage + 1,
@@ -134,9 +154,16 @@ export default function Home() {
     setCustomRowsPerPage(newRowPerPage);
     setCustomPage(1);
     router.push({
-      pathname: router.pathname,
+      pathname: pathname,
       query: { ...router.query, page: 1, rowPerPage: newRowPerPage },
     });
+  };
+
+  // delete user
+  const handleDelete = (id) => {
+    const updatedData = userData.filter((user) => user.id !== id);
+    setUserData(updatedData);
+    setUserDataToStorage(updatedData);
   };
 
   return (
@@ -152,9 +179,9 @@ export default function Home() {
           <Container maxWidth="xl" className={styles.container}>
             <Paper className={styles.paper}>
               <Typography variant="h4" className={styles.title}>
-                Welcome to the Data Table App
+                User Data
               </Typography>
-              
+
               <Box className={searchStyles.searchContainer}>
                 <Search
                   type={"text"}
@@ -163,14 +190,15 @@ export default function Home() {
                   handleSearch={handleSearch}
                   handleClear={handleClear}
                 />
-              <Box className={btnStyles.buttonContainer}>
-                <CustomButton
-                  variant="contained"
-                  label="Add User"
-                  startIcon={<AddIcon />}
-                  onClick={() => setAddOpen(true)}
-                />
-              </Box>
+                <Box className={btnStyles.buttonContainer}>
+                  <CustomButton
+                    variant="contained"
+                    label="Add User"
+                    startIcon={<AddIcon />}
+                    onClick={() => setAddOpen(true)}
+                    className={btnStyles.btn}
+                  />
+                </Box>
               </Box>
               <DataTable
                 page={customPage}
@@ -183,6 +211,9 @@ export default function Home() {
                 onPageChange={handlePageChange}
                 onRowChange={handleRowPerPageChange}
                 columns={userColumns}
+                setViewModal={setViewModal}
+                setEditModal={setEditModal}
+                setDeleteModal={setDeleteModal}
               />
             </Paper>
           </Container>
@@ -190,15 +221,33 @@ export default function Home() {
       </Box>
       {/* This modal for add user */}
       <AddEditModal
-        open={addOpen}
+        open={addOpen || editModal.open}
+        id={editModal?.id}
+        userData={editModal?.id ? singleUser : userData}
+        setUserData={editModal?.id ? setSingleUser : setUserData}
+        onClose={() => {
+          editModal.id ? setEditModal({ open: false }) : setAddOpen(false);
+        }}
+        title={editModal.open ? "Edit User Details" : "Add User Details"}
+      />
+      <ViewModal
+        title={"User Details"}
+        open={viewModal.open}
+        id={viewModal?.id}
+        onClose={() => setViewModal({ open: false })}
         userData={userData}
         setUserData={setUserData}
-        onClose={() => {
-          setAddOpen(false);
-        }}
-        title={"Add User Details"}
       />
-      
+      <DeleteModal
+        open={deleteModal.open}
+        id={deleteModal?.id}
+        userData={userData}
+        onDelete={handleDelete}
+        setDeleteModal={setDeleteModal}
+        title="Delete User"
+        message="Are you sure you want to delete this user?"
+        onClose={() => setDeleteModal({ open: false })}
+      />
     </>
   );
 }

@@ -19,12 +19,16 @@
 }
 
 .userDetails {
-  padding: 20px;
-  background-color: var(--white);
+  padding-block: 20px;
+}
+.userDetails .userDetailsBox {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #f4f7fc;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(var(--gray-rgb), 0.1);
-  max-width: 400px;
-  margin: 20px auto;
+  margin-bottom: 4px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 .userDetails .userDetailsTitle {
   font-weight: 600;
@@ -40,4 +44,17 @@
 .userDetails .userDetailsLabel {
   font-weight: 600;
   color: var(--gray-800);
+  font-size: 14px;
+  line-height: 18px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+.userDetails .userContent {
+  font-weight: 500;
+  color: var(--gray-500);
+  font-size: 14px;
+  line-height: 18px;
+  text-transform: capitalize;
+  margin-bottom: 8px;
 }

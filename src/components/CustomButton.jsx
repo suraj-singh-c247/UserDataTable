@@ -5,8 +5,8 @@ function CustomButton({ variant, label, startIcon, onClick, ...props }) {
     <Button
       variant={variant}
       onClick={onClick}
-      {...props}
       startIcon={startIcon}
+      {...props}
     >
       {label}
     </Button>

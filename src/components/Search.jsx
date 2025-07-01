@@ -1,6 +1,7 @@
-import { Box, IconButton, TextField } from "@mui/material";
+import { Box, IconButton, InputAdornment, TextField } from "@mui/material";
 import { memo } from "react";
 import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from '@mui/icons-material/Search';
 import searchStyles from "@/styles/Search.module.css";
 const Search = ({
   placeholder,
@@ -29,6 +30,15 @@ const Search = ({
         value={searchTerm}
         placeholder={placeholder || "Search..."}
         onChange={(e) => handleSearch(e.target.value)}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          },
+        }}
       />
       {searchTerm && searchTerm.length > 0 && (
         <IconButton

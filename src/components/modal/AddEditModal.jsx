@@ -22,6 +22,7 @@ import {
 import { toast } from "react-toastify";
 
 const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
+  
   const {
     handleSubmit,
     setValue,
@@ -98,7 +99,7 @@ const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
       <Fade in={open}>
         <Box className={styles.modalStyle}>
           <Box className={styles.modalHeader}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
+            <Typography className={styles.modalHeading} id="modal-modal-title" variant="h6" component="h2">
               {title || "Add User Details"}
             </Typography>
             <IconButton
@@ -137,11 +138,13 @@ const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
                   variant={"outlined"}
                   onClick={onClose}
                   label={"Cancel"}
+                  className={`${btnStyles.btn} ${btnStyles.secondaryButton}`}
                 />
                 <CustomButton
                   type="submit"
                   variant={"contained"}
                   label={"Save"}
+                  className={`${btnStyles.btn} ${btnStyles.primaryButton}`}
                 />
               </Box>
             </Box>
