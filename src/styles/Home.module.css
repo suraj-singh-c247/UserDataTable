@@ -28,7 +28,8 @@
   border: 1px solid #f4f7fc;
   border-radius: 8px;
   margin-bottom: 4px;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
 }
 .userDetails .userDetailsTitle {
   font-weight: 600;
@@ -48,7 +49,8 @@
   line-height: 18px;
   text-transform: uppercase;
   margin-bottom: 8px;
-  display: block;
+  display: inline-block;
+  margin-right: 8px;
 }
 .userDetails .userContent {
   font-weight: 500;

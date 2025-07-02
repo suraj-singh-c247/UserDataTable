@@ -1,5 +1,6 @@
-.error{
-    color: red;
-    font-size: 0.8rem;
-    margin-top: 0.25rem;
+.error {
+  color: red;
+  font-size: 0.8rem !important;
+  margin-top: 0.25rem !important;
+  margin-left: 0.7rem !important;
 }

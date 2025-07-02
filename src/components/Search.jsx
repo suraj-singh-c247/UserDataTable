@@ -11,7 +11,7 @@ const Search = ({
   className,
   searchTerm,
   handleSearch,
-  handleClear,
+  onClear,
 }) => {
   return (
     <Box
@@ -43,7 +43,7 @@ const Search = ({
       {searchTerm && searchTerm.length > 0 && (
         <IconButton
           aria-label="clear"
-          onClick={handleClear}
+          onClick={onClear}
           className={searchStyles.clearButton}
         >
           <CloseIcon />

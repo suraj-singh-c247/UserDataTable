@@ -9,7 +9,7 @@ import style from "@/styles/Home.module.css";
 const UserDetails = ({ user }) => {
   return (
     <Grid container spacing={1} className={style.userDetails}>
-      <Grid size={6}>
+      <Grid size={12}>
         <Box className={style.userDetailsBox}>
           <PersonIcon color="success" />
           <Box>
@@ -30,7 +30,7 @@ const UserDetails = ({ user }) => {
           </Box>
         </Box>
       </Grid>
-      <Grid size={6}>
+      <Grid size={12}>
         <Box className={style.userDetailsBox}>
           <EmailIcon color="success" />
           <Box>
@@ -51,7 +51,7 @@ const UserDetails = ({ user }) => {
           </Box>
         </Box>
       </Grid>
-      <Grid size={6}>
+      <Grid size={12}>
         <Box className={style.userDetailsBox}>
           <PhoneIcon color="success" />
           <Box>
@@ -72,7 +72,7 @@ const UserDetails = ({ user }) => {
           </Box>
         </Box>
       </Grid>
-      <Grid size={6}>
+      <Grid size={12}>
         <Box className={style.userDetailsBox}>
           <ManageAccountsIcon color="success" />
           <Box>
@@ -93,7 +93,7 @@ const UserDetails = ({ user }) => {
           </Box>
         </Box>
       </Grid>
-      <Grid size={6}>        
+      <Grid size={12}>        
           <Box className={style.userDetailsBox}>
             <PanoramaFishEyeIcon color="success" />
             <Box>

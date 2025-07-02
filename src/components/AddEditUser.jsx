@@ -3,7 +3,8 @@ import {
   InputLabel,
   MenuItem,  
   Select,
-  TextField, 
+  TextField,
+  Typography, 
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import errorStyles from "@/styles/Error.module.css";
@@ -61,7 +62,7 @@ const EditUser = ({control,errors}) => {
                   <MenuItem value="Viewer">Viewer</MenuItem>
                 </Select>
                 {errors.role && (
-                  <p className={errorStyles.error}>{errors.role.message}</p>
+                  <Typography component={"span"} className={errorStyles.error}>{errors.role.message}</Typography>
                 )}
               </FormControl>
             )}
@@ -98,9 +99,9 @@ const EditUser = ({control,errors}) => {
                   <MenuItem value="Pending">Pending</MenuItem>
                 </Select>
                 {errors.status && (
-                  <p style={{ color: "red", fontSize: "0.8rem" }}>
+                  <Typography component={"span"} className={errorStyles.error}>
                     {errors.status.message}
-                  </p>
+                  </Typography>
                 )}
               </FormControl>
             )}

@@ -1,6 +1,8 @@
 .searchContainer {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: space-between;
   margin-bottom: 16px;
   padding-inline: 24px;
@@ -9,10 +11,12 @@
 .searchContainer .searchForm {
   position: relative;
 }
-.searchContainer .searchForm div {
+.searchContainer .searchForm .searchControl > div {
   border-radius: 16px;
   height: 42px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
+
 .searchContainer .searchForm .clearButton {
   position: absolute;
   right: 0;

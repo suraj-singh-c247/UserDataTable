@@ -1,3 +1,4 @@
+"use client";
 import Head from "next/head";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Box, Container, Paper, Typography } from "@mui/material";
@@ -10,7 +11,7 @@ import {
   setUserDataToStorage,
 } from "@/utils/localStorageData";
 // react hooks
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 
 // custom modal
@@ -26,6 +27,8 @@ import btnStyles from "@/styles/Button.module.css";
 import searchStyles from "@/styles/Search.module.css";
 import ViewModal from "@/components/modal/ViewModal";
 import DeleteModal from "@/components/modal/DeleteModal";
+import useDebounce from "@/hooks/use-debounce";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -38,8 +41,6 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   const router = useRouter();
-  const pathname = router.pathname.replace(/^\//, "");
-
   const { search = "", page = "1", rowPerPage = "10" } = router.query;
   //state
   const [addOpen, setAddOpen] = useState(false);
@@ -53,9 +54,12 @@ export default function Home() {
   const [viewModal, setViewModal] = useState({ id: null, open: false });
   const [deleteModal, setDeleteModal] = useState({ id: null, open: false });
   const [editModal, setEditModal] = useState({ id: null, open: false });
-  // useEffect to initialize user data from local storage or default data
-  // and set it to state
+  // custom hook call
+  const searchValue = useDebounce({ text: searchText, delay: 1000 });
 
+
+
+  // Load user data from storage defualt
   useEffect(() => {
     if (!router.isReady) return;
     const storedData = getUserDataFromStorage();
@@ -67,44 +71,55 @@ export default function Home() {
     }
   }, [router.isReady, editModal.id, deleteModal.id]);
 
+  // update user data when we updating and delete
   useEffect(() => {
+    if (!router.isReady) return;
     const storedData = getUserDataFromStorage();
-    if (!search && !search.trim() === "") {
-      setUserData(storedData);
-      setSearchText("");
-      return;
-    }
-    const filteredData = storedData.filter((user) => {
-      return (
-        user.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
-        user.email.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
-        user.role.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
-        user.phoneNumber
-          .toLocaleLowerCase()
-          .includes(search.toLocaleLowerCase()) ||
-        user.status.toLocaleLowerCase().includes(search.toLocaleLowerCase())
-      );
-    });
+    setUserData(storedData);
+  }, [editModal.id, viewModal.id, deleteModal.id]);
 
-    setUserData(filteredData);
-    setSearchText(search);
-    if (search.length === 0) {
-      router.push({
-        pathname: pathname,
-        query: {},
-      });
-    }
-  }, [search]);
+
+  // useEffect for search
+  useEffect(() => {
+   if (searchValue && searchValue.length > 3) {
+     router.replace({
+       pathname: router.pathname,
+       query:{...router.query,search:searchValue}
+    })
+   } else {
+    router.replace({
+      pathname: router.pathname,
+      query:{}
+   })
+   }
+ },[searchValue,search])
+
+// filter data when we search
+  const filteredData = useMemo(() => {
+    if (!search) return userData;
+    const lowerSearch = search.toLowerCase();
+    return userData.filter((user) =>
+      ["name", "email", "role", "phoneNumber", "status"].some((key) =>
+        user[key]?.toLowerCase().includes(lowerSearch)
+      )
+    );
+  }, [userData, search]);
+
+  // paginated data
+  const paginatedData = useMemo(() => {
+    const start = customPage * customRowsPerPage;
+    return filteredData.slice(start,start+customRowsPerPage)
+  },[filteredData,customPage,customRowsPerPage])
+ 
   // It's use for edit
   useEffect(() => {
-    const data = getUserDataFromStorage();
     if (editModal?.id) {
-      const foundUser = data.find(
+      const foundUser = userData.find(
         (user) => user.id === parseInt(editModal?.id)
       );
       if (foundUser) setSingleUser(foundUser);
     }
-  }, [editModal?.id]);
+  }, [editModal?.id,userData]);
 
   if (!singleUser) return null;
 
@@ -115,32 +130,26 @@ export default function Home() {
   }, [customPage, customRowsPerPage]);
 
   // Function to handle search input
-  const handleSearch = (searchTerm) => {
-    if (searchTerm.length > 3) {
-      setSearchText(searchTerm);
-    }
-
-    router.push({
-      pathname: pathname,
-      query: { search: searchTerm },
-    });
-  };
+  const handleSearch = useCallback((searchTerm) => {
+    setSearchText(searchTerm);    
+  },[router]);
   // Function to clear search input and reset user data
-  const handleClear = () => {
-    setSearchText("");
+  const handleClear = useCallback(() => {
+    setSearchText("")
+    const storedData = getUserDataFromStorage();    
     router.push({
-      pathname: pathname,
+      pathname: router.pathname,
       query: {},
-    });
-    const storedData = getUserDataFromStorage();
+    });    
     setUserData(storedData);
-  };
+    
+  });
 
   // Function to handle page change
   const handlePageChange = (event, newPage) => {
     setCustomPage(newPage);
     router.push({
-      pathname: pathname,
+      pathname: router.pathname,
       query: {
         ...router.query,
         page: customPage + 1,
@@ -154,7 +163,7 @@ export default function Home() {
     setCustomRowsPerPage(newRowPerPage);
     setCustomPage(1);
     router.push({
-      pathname: pathname,
+      pathname: router.pathname,
       query: { ...router.query, page: 1, rowPerPage: newRowPerPage },
     });
   };
@@ -188,7 +197,8 @@ export default function Home() {
                   searchTerm={searchText}
                   setSearchTerm={setSearchText}
                   handleSearch={handleSearch}
-                  handleClear={handleClear}
+                  onClear={handleClear}
+                  className={searchStyles.searchControl}
                 />
                 <Box className={btnStyles.buttonContainer}>
                   <CustomButton
@@ -204,10 +214,7 @@ export default function Home() {
                 page={customPage}
                 rowsPerPage={customRowsPerPage}
                 count={userData.length}
-                userData={userData.slice(
-                  customPage * customRowsPerPage,
-                  customPage * customRowsPerPage + customRowsPerPage
-                )}
+                userData={paginatedData}
                 onPageChange={handlePageChange}
                 onRowChange={handleRowPerPageChange}
                 columns={userColumns}
