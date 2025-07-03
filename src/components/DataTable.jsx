@@ -19,6 +19,7 @@ const DataTable = ({
   setEditModal,
   setDeleteModal
 }) => {
+  
   return (
     <>
       <TableContainer>

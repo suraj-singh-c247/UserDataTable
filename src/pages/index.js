@@ -41,23 +41,18 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   const router = useRouter();
-  const { search = "", page = "1", rowPerPage = "10" } = router.query;
+  const { page = "1", rowPerPage = "10" } = router.query;
   //state
   const [addOpen, setAddOpen] = useState(false);
   const [userData, setUserData] = useState(data);
-  const [singleUser, setSingleUser] = useState([]);
   const [searchText, setSearchText] = useState("");
-  const [customPage, setCustomPage] = useState(Number(page) - 1);
-  const [customRowsPerPage, setCustomRowsPerPage] = useState(
-    Number(rowPerPage)
-  );
+  const [customPage, setCustomPage] = useState(Number(page)-1);
+  const [customRowsPerPage, setCustomRowsPerPage] = useState(Number(rowPerPage));
   const [viewModal, setViewModal] = useState({ id: null, open: false });
   const [deleteModal, setDeleteModal] = useState({ id: null, open: false });
   const [editModal, setEditModal] = useState({ id: null, open: false });
   // custom hook call
-  const searchValue = useDebounce({ text: searchText, delay: 1000 });
-
-
+  const searchValue = useDebounce({ text: searchText, delay: 1000,router });
 
   // Load user data from storage defualt
   useEffect(() => {
@@ -67,72 +62,54 @@ export default function Home() {
       setUserData(storedData);
     } else {
       setUserData(data);
-      setUserDataToStorage(data);
+      setUserDataToStorage(data);      
     }
-  }, [router.isReady, editModal.id, deleteModal.id]);
-
-  // update user data when we updating and delete
-  useEffect(() => {
-    if (!router.isReady) return;
-    const storedData = getUserDataFromStorage();
-    setUserData(storedData);
-  }, [editModal.id, viewModal.id, deleteModal.id]);
-
-
-  // useEffect for search
-  useEffect(() => {
-   if (searchValue && searchValue.length > 3) {
-     router.replace({
-       pathname: router.pathname,
-       query:{...router.query,search:searchValue}
-    })
-   } else {
-    router.replace({
-      pathname: router.pathname,
-      query:{}
-   })
-   }
- },[searchValue,search])
+  }, [router.isReady]);
+ 
+  
 
 // filter data when we search
   const filteredData = useMemo(() => {
-    if (!search) return userData;
-    const lowerSearch = search.toLowerCase();
+    if (!searchValue) return userData;
+    const lowerSearch = searchValue.toLowerCase();
     return userData.filter((user) =>
       ["name", "email", "role", "phoneNumber", "status"].some((key) =>
         user[key]?.toLowerCase().includes(lowerSearch)
       )
     );
-  }, [userData, search]);
+  }, [userData, searchValue]);
 
   // paginated data
   const paginatedData = useMemo(() => {
     const start = customPage * customRowsPerPage;
-    return filteredData.slice(start,start+customRowsPerPage)
+    const sliceData = filteredData.slice(start, (start) + customRowsPerPage);
+    return sliceData;
   },[filteredData,customPage,customRowsPerPage])
- 
-  // It's use for edit
-  useEffect(() => {
-    if (editModal?.id) {
-      const foundUser = userData.find(
-        (user) => user.id === parseInt(editModal?.id)
-      );
-      if (foundUser) setSingleUser(foundUser);
-    }
-  }, [editModal?.id,userData]);
-
-  if (!singleUser) return null;
+  
 
   // useEffect for pagination
   useEffect(() => {
-    setCustomPage(Number(customPage));
-    setCustomRowsPerPage(Number(customRowsPerPage));
+    if (router.isReady) {
+      setCustomPage(Number(customPage));
+      setCustomRowsPerPage(Number(customRowsPerPage));
+      router.push({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          page: customPage,
+          rowPerPage: customRowsPerPage,
+        },
+      }); 
+    }
+    
   }, [customPage, customRowsPerPage]);
 
   // Function to handle search input
-  const handleSearch = useCallback((searchTerm) => {
+  const handleSearch = (searchTerm) => {
     setSearchText(searchTerm);    
-  },[router]);
+  };
+  
+  
   // Function to clear search input and reset user data
   const handleClear = useCallback(() => {
     setSearchText("")
@@ -141,18 +118,19 @@ export default function Home() {
       pathname: router.pathname,
       query: {},
     });    
-    setUserData(storedData);
-    
+    setUserData(storedData);    
   });
 
   // Function to handle page change
-  const handlePageChange = (event, newPage) => {
+  const handlePageChange = (event,newPage) => {  
+    console.log(newPage,"newPage");
+    
     setCustomPage(newPage);
     router.push({
       pathname: router.pathname,
       query: {
         ...router.query,
-        page: customPage + 1,
+        page: customPage,
         rowPerPage: customRowsPerPage,
       },
     });
@@ -160,11 +138,12 @@ export default function Home() {
 
   const handleRowPerPageChange = (event) => {
     const newRowPerPage = parseInt(event.target.value, 10);
+    console.log(newRowPerPage,"newRowPerPage");    
     setCustomRowsPerPage(newRowPerPage);
-    setCustomPage(1);
+    setCustomPage(0);
     router.push({
       pathname: router.pathname,
-      query: { ...router.query, page: 1, rowPerPage: newRowPerPage },
+      query: { ...router.query, page: customPage, rowPerPage: newRowPerPage },
     });
   };
 
@@ -174,6 +153,10 @@ export default function Home() {
     setUserData(updatedData);
     setUserDataToStorage(updatedData);
   };
+
+// console.log(router.query,"router query");
+console.log(customPage,"customPage");
+// console.log(customRowsPerPage,"custcustomRowsPerPageomPage");
 
   return (
     <>
@@ -230,8 +213,8 @@ export default function Home() {
       <AddEditModal
         open={addOpen || editModal.open}
         id={editModal?.id}
-        userData={editModal?.id ? singleUser : userData}
-        setUserData={editModal?.id ? setSingleUser : setUserData}
+        userData={userData}
+        setUserData={setUserData}
         onClose={() => {
           editModal.id ? setEditModal({ open: false }) : setAddOpen(false);
         }}

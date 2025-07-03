@@ -4,7 +4,7 @@ const data=[
     "name": "Alice Johnson",
     "email": "alice.johnson@example.com",
     "role": "Admin",
-    "phoneNumber": "123-456-7890",
+    "phoneNumber": "1234567890",
     "status": "Active"
   },
   {
@@ -12,7 +12,7 @@ const data=[
     "name": "Bob Smith",
     "email": "bob.smith@example.com",
     "role": "Editor",
-    "phoneNumber": "123-456-7890",
+    "phoneNumber": "1234567890",
     "status": "Inactive"
   },
   {
@@ -20,7 +20,7 @@ const data=[
     "name": "Charlie Davis",
     "email": "charlie.davis@example.com",
     "role": "Viewer",
-    "phoneNumber": "123-456-7890",
+    "phoneNumber": "1234567890",
     "status": "Active"
   },
   {
@@ -28,7 +28,7 @@ const data=[
     "name": "Diana Prince",
     "email": "diana.prince@example.com",
     "role": "Admin",
-    "phoneNumber": "123-456-7890",
+    "phoneNumber": "1234567890",
     "status": "Active"
   },
   {
@@ -36,7 +36,7 @@ const data=[
     "name": "Ethan Brown",
     "email": "ethan.brown@example.com",
     "role": "Editor",
-    "phoneNumber": "123-456-7890",
+    "phoneNumber": "1234567890",
     "status": "Pending"
   },
   {
@@ -44,7 +44,7 @@ const data=[
     "name": "Fiona Garcia",
     "email": "fiona.garcia@example.com",
     "role": "Viewer",
-    "phoneNumber": "123-456-7890",
+    "phoneNumber": "1234567890",
     "status": "Active"
   },
   {
@@ -52,7 +52,7 @@ const data=[
     "name": "George Lee",
     "email": "george.lee@example.com",
     "role": "Admin",
-    "phoneNumber": "123-456-7890",
+    "phoneNumber": "1234567890",
     "status": "Inactive"
   },
   {
@@ -60,7 +60,7 @@ const data=[
     "name": "Hannah Wilson",
     "email": "hannah.wilson@example.com",
     "role": "Editor",
-    "phoneNumber": "123-456-7890",
+    "phoneNumber": "1234567890",
     "status": "Active"
   },
   {
@@ -68,7 +68,7 @@ const data=[
     "name": "Ian Thomas",
     "email": "ian.thomas@example.com",
     "role": "Viewer",
-    "phoneNumber": "123-456-7890",
+    "phoneNumber": "1234567890",
     "status": "Active"
   },
   {
@@ -76,7 +76,7 @@ const data=[
     "name": "Julia Martinez",
     "email": "julia.martinez@example.com",
     "role": "Admin",
-    "phoneNumber": "123-456-7890",
+    "phoneNumber": "1234567890",
     "status": "Pending"
   }
 ]

@@ -8,16 +8,15 @@ import {
   Tooltip,
 } from "@mui/material";
 import { memo } from "react";
-import { useRouter } from "next/router";
 import PreviewIcon from "@mui/icons-material/Preview";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import tableStyle from "@/styles/Table.module.css";
-const CustomTableBody = ({ userData,setViewModal,setEditModal,setDeleteModal }) => {
-  const router = useRouter();
+const CustomTableBody = ({userData,setViewModal,setEditModal,setDeleteModal }) => {
+
   return (
     <TableBody className={tableStyle.tableBody}>
-      {userData.map((row) => (
+      {userData&&userData.map((row) => (
         <TableRow hover key={row.id}>
           <TableCell>{row.name}</TableCell>
           <TableCell>{row.email}</TableCell>

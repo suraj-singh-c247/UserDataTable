@@ -22,7 +22,6 @@ import {
 import { toast } from "react-toastify";
 
 const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
-  
   const {
     handleSubmit,
     setValue,
@@ -39,17 +38,21 @@ const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
       status: "",
     },
   });
+  // It's use for edit
+
   useEffect(() => {
     if (userData && id) {
-      setValue("name", userData.name || "");
-      setValue("email", userData.email || "");
-      setValue("role", userData.role || "");
-      setValue("phoneNumber", userData.phoneNumber || "");
-      setValue("status", userData.status || "");
+      const findUser = userData.find((user) => user.id === parseInt(id));
+      setValue("name", findUser.name || "");
+      setValue("email", findUser.email || "");
+      setValue("role", findUser.role || "");
+      setValue("phoneNumber", findUser.phoneNumber || "");
+      setValue("status", findUser.status || "");
     } else {
       reset();
     }
   }, [open, userData]);
+
   const onSubmit = (data) => {
     const existingData = getUserDataFromStorage();
     if (!id) {
@@ -57,7 +60,7 @@ const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
         (user) => user.email === data.email
       );
       if (emailExists) {
-        alert("Email already exists. Please use a different email.");
+        toast.error("Email already exists. Please use a different email.");
         return; // Stop the submission if email already exists
       }
       const newId = existingData.length
@@ -71,7 +74,7 @@ const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
     }
 
     if (id) {
-      const updatedData = existingData.map((user) =>
+      const updatedData = userData.map((user) =>
         user.id === parseInt(id) ? { ...user, ...data } : user
       );
       setUserData(updatedData);
@@ -99,7 +102,12 @@ const AddEditModal = ({ open, onClose, title, userData, setUserData, id }) => {
       <Fade in={open}>
         <Box className={styles.modalStyle}>
           <Box className={styles.modalHeader}>
-            <Typography className={styles.modalHeading} id="modal-modal-title" variant="h6" component="h2">
+            <Typography
+              className={styles.modalHeading}
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+            >
               {title || "Add User Details"}
             </Typography>
             <IconButton
