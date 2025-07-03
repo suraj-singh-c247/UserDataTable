@@ -122,9 +122,7 @@ export default function Home() {
   });
 
   // Function to handle page change
-  const handlePageChange = (event,newPage) => {  
-    console.log(newPage,"newPage");
-    
+  const handlePageChange = (event,newPage) => { 
     setCustomPage(newPage);
     router.push({
       pathname: router.pathname,
@@ -137,8 +135,7 @@ export default function Home() {
   };
 
   const handleRowPerPageChange = (event) => {
-    const newRowPerPage = parseInt(event.target.value, 10);
-    console.log(newRowPerPage,"newRowPerPage");    
+    const newRowPerPage = parseInt(event.target.value, 10);    
     setCustomRowsPerPage(newRowPerPage);
     setCustomPage(0);
     router.push({
@@ -153,11 +150,7 @@ export default function Home() {
     setUserData(updatedData);
     setUserDataToStorage(updatedData);
   };
-
-// console.log(router.query,"router query");
-console.log(customPage,"customPage");
-// console.log(customRowsPerPage,"custcustomRowsPerPageomPage");
-
+  
   return (
     <>
       <Head>
